@@ -1,0 +1,101 @@
+    #Calculate the price of parking
+    #Made a couple of assumptions:
+        #1. Regardless of day, the parking prices will remain the same
+        #2. Parking costs are pro-rated, down to the minute. e.g.: It costs $24 to park for a whole day. 
+        #So if you were to park for 1hr 30mins, you will be charged  $1.50
+
+
+# checking if time input is right
+def check_time_input(x):
+    # check if user input integer value
+    try:
+        hh=int(x[:2])
+        mm=int(x[2:])
+        if hh>23 or hh<0:
+            return False
+        if mm>59 or mm<0:
+            return False
+    except:
+        return False
+    return True
+
+def calculate_duration(entry_time,exit_time):
+    # get hour/min from entry time
+    hh_entry=int(entry_time[:2])
+    mm_entry=int(entry_time[2:])
+
+    # get hour/min from exit time
+    hh_exit=int(exit_time[:2])
+    mm_exit=int(exit_time[2:])
+
+    #calculate duration 
+    #entry=2359, exit=0700
+    if hh_entry>hh_exit:
+        hh=24-hh_entry+hh_exit-1
+    else:
+        #entry=0700, exit=2359
+        hh=hh_exit-hh_entry
+
+    #calculate for mm
+    if mm_entry>mm_exit:
+        mm=60-mm_entry+mm_exit
+    else:
+        mm=mm_exit-mm_entry
+
+    if mm>59:
+        hh+=1
+        mm-=60
+
+    return hh,mm
+
+def user_input(day_list):
+
+    # get user input for day
+    day=input(str("Please enter day (Monday-Sunday) of intended parking: "))
+    day=day.lower()
+
+    # checking to ensure day input is right
+    while not day in day_list:
+        print("Incorrect format, please try again")
+        day=input(str("Please enter day (Monday-Sunday) of intended parking: "))
+        day=day.lower()
+
+    # get entry_time input from user 
+    entry_time=input("Please insert expected time of entry into carpark (hhmm): ")
+    entry_time=entry_time.lower()
+
+    # checking to ensure entry_time input is right
+    while not check_time_input(entry_time):
+        print("Incorrect format, please try again")
+        entry_time=input("Please insert expected time of entry into carpark (hhmm): ")
+        entry_time=entry_time.lower()
+
+    # get exit_time input from user
+    exit_time=input("Please insert expected time of exit of carpark (hhmm): ")
+    exit_time=exit_time.lower()
+
+    # checking to ensure exit_time input is right
+    while not check_time_input(exit_time):
+        print("Incorrect format, please try again")
+        exit_time=input("Please insert expected time of exit into carpark (hhmm): ")
+        exit_time=exit_time.lower()
+
+    return day, entry_time, exit_time
+
+
+def main():
+    day_list=['monday','tuesday','wednesday','thursday','friday','saturday','sunday']
+    full_day_parking=24 # $24 to park whole day
+    per_min_parking=full_day_parking/(60*24) 
+    
+    day, entry_time, exit_time = user_input(day_list)
+    #print(day, entry_time, exit_time)
+    # Duration user stayed in the carpark
+    hh,mm=calculate_duration(entry_time,exit_time)
+    #print(hh,mm)
+    cost=round((hh*(per_min_parking*60))+(mm*per_min_parking),2)
+
+    print("Expected cost of parking on ", day, "from ", entry_time,"to ",exit_time, "is $", cost) 
+
+if __name__ == '__main__':
+    main()
